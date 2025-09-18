@@ -9,7 +9,7 @@
 #include "gfx3d.h"
 #include "ambulance.h"
 
-double zbuffer[192*192];
+static double zbuffer[192*192];
 
 gfx3d_model ambulance;
 gfx3d_model ambulance_bits[4];

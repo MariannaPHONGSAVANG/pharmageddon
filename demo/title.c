@@ -8,7 +8,7 @@
 #include "gfx3d.h"
 #include "title.h"
 
-double zbuffer[192*192];
+static double zbuffer[192*192];
 
 gfx3d_model virus0;
 gfx3d_model virus1;

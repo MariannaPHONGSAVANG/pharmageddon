@@ -3,7 +3,7 @@
 #include "gfx3d.h"
 #include "twister.h"
 
-double zbuffer[192*192];
+static double zbuffer[192*192];
 
 gfx3d_model square;
 

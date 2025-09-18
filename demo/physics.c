@@ -3,7 +3,7 @@
 #include "gfx3d.h"
 #include "physics.h"
 
-double zbuffer[192*192];
+static double zbuffer[192*192];
 
 gfx3d_model box;
 
