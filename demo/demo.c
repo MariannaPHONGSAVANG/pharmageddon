@@ -140,19 +140,28 @@ typedef struct {
   const char *size;     // "192:192" pour la croix entière
   int fps;              // ex: 25
   uint32_t loop_ms;     // 0 => auto (durée réelle via ffprobe)
+  uint32_t window_ms;   // durée à l’écran (en ms) -> le GIF boucle pendant ce temps
 } GifConf;
 
 static GifConf GIFS[] = {
-  { "../assets/pattern-14425_512.gif", "192:192", 25, 20},
-  // { "../assets/ton_autre.gif",         "192:192", 25, 0 },
-  // { "../assets/encore.gif",            "192:192", 25, 8000 },
+  // Boucle à sa durée réelle, mais reste 20 secondes à l’écran
+  { "../assets/pattern-14425_512.gif", "192:192", 25, 0, 20000 },
+  { "../assets/pattern-purple.gif", "192:192", 25, 0, 15000 },
+  
+
+
+  // Exemple: reste 8 s, même si le GIF fait 3.8 s (il reboucle 2×+)
+  // { "../assets/ton_autre.gif", "192:192", 25, 0, 8000 },
 };
 #define NUM_GIFS (sizeof(GIFS)/sizeof(GIFS[0]))
 
+
+
 static gifclip clips[NUM_GIFS];
+
+static uint32_t GIFS_END = 0;
 static uint32_t gif_cumul_end[NUM_GIFS];
 static uint32_t gif_total_ms = 0;
-static uint32_t GIFS_END = 0;
 
 void demo_init(void) {
   scroller_init();
@@ -163,9 +172,16 @@ void demo_init(void) {
   uint32_t t = 0;
   for (int i = 0; i < (int)NUM_GIFS; ++i) {
     gifclip_init(&clips[i], GIFS[i].path, GIFS[i].size, GIFS[i].fps, GIFS[i].loop_ms);
-    uint32_t d = gifclip_duration_ms(&clips[i]);
-    if (d == 0) d = 5000; // défaut 5s si durée inconnue
-    t += d;
+
+    // Combien de temps on veut l’afficher ?
+    uint32_t play_ms = GIFS[i].window_ms;
+    if (play_ms == 0) {
+      // si tu laisses 0, on prend sa durée réelle (il ne jouera qu’1 boucle)
+      uint32_t d = gifclip_duration_ms(&clips[i]);
+      play_ms = (d > 0) ? d : 5000;
+    }
+
+    t += play_ms;
     gif_cumul_end[i] = t;
   }
   gif_total_ms = t;
@@ -173,14 +189,15 @@ void demo_init(void) {
 }
 
 static inline void run_gif_playlist(uint32_t *pixels, uint32_t t_local) {
-  // Boucler toute la playlist :
+  // Boucler toute la playlist si tu veux
   if (gif_total_ms > 0) t_local %= gif_total_ms;
 
   uint32_t start = 0;
   for (int i = 0; i < (int)NUM_GIFS; ++i) {
     uint32_t end = gif_cumul_end[i];
     if (t_local < end) {
-      gifclip_frame(&clips[i], pixels, t_local - start);
+      uint32_t local = t_local - start;   // temps écoulé dans la fenêtre
+      gifclip_frame(&clips[i], pixels, local); // => s’occupe du modulo sur la durée réelle
       return;
     }
     start = end;

@@ -6,9 +6,11 @@
 typedef struct {
   video v;
   bool ok;
-  uint32_t loop_ms;     // durée de boucle (ms). 0 => déduite via ffprobe si possible
-  char mpg_path[256];   // chemin du .mpg généré
+  uint32_t loop_ms;
+  char mpg_path[256];
+  uint32_t last_cycle;   // <--- nouveau
 } gifclip;
+
 
 int  gifclip_init(gifclip *gc, const char *gif_path,
                   const char *size, int fps, uint32_t loop_ms);
