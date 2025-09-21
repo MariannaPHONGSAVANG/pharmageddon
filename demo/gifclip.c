@@ -147,3 +147,6 @@ void gifclip_frame(gifclip *gc, uint32_t *pixels, uint32_t t_ms) {
   // Rendu de la frame pour ce temps local
   video_frame(&gc->v, pixels, local);
 }
+uint32_t gifclip_duration_ms(const gifclip *gc) {
+  return (gc && gc->ok) ? gc->loop_ms : 0u;
+}

@@ -147,6 +147,8 @@ static GifConf GIFS[] = {
   // Boucle à sa durée réelle, mais reste 20 secondes à l’écran
   { "../assets/pattern-14425_512.gif", "192:192", 25, 0, 20000 },
   { "../assets/pattern-purple.gif", "192:192", 25, 0, 15000 },
+  { "../assets/Medicine_Pills.gif", "192:192", 25, 0, 15000 },
+
   
 
 
